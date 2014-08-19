@@ -11,8 +11,11 @@
 
 #pragma comment(lib,"wininet.lib")
 
+bool internetCheckConnection();
+void showHelp();
+
 int main(int argc, char* argv[])
-{    
+{
     if(argc > 3)
     {
         printf("输入参数错误！\n");
@@ -24,19 +27,17 @@ int main(int argc, char* argv[])
 
     if(argc == 2 && strcmp(argv[1], "/?") == 0)
     {
-        printf("InternetCheckConnection 用法：\n\n");
-        printf("InternetCheckConnection /?        查看此帮助信息\n");
-        printf("InternetCheckConnection           检测是否可连接到网络，可连接返回1，否则返回0\n");
-        printf("InternetCheckConnection time n    检测是否可连接到网络，可连接返回1，否则每隔\n");
-        printf("                                  time毫秒检测1次，最多检测n次\n\n");
+        showHelp();
         printf("按任意键退出程序...\n");
         _getch();
         exit(0);
     }
     else if(argc == 1)
     {
-        bool ping = InternetCheckConnectionA("http://www.baidu.com/", FLAG_ICC_FORCE_CONNECTION, 0);
-        if(ping)
+        //bool ping = InternetCheckConnectionA("http://www.baidu.com/", FLAG_ICC_FORCE_CONNECTION, 0);
+        showHelp();
+        printf("\n");
+        if(internetCheckConnection())
         {
             printf("网络正常连接！\n");
             return 1;
@@ -58,8 +59,7 @@ int main(int argc, char* argv[])
         while(n--)
         {
             static int count = 0;
-            ping = InternetCheckConnectionA("http://www.baidu.com/", FLAG_ICC_FORCE_CONNECTION, 0);
-            if(ping)
+            if(internetCheckConnection())
             {
                 printf("网络正常连接！\n");
                 return 1;
@@ -85,5 +85,36 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
+}
+
+//检测是否可联网
+bool internetCheckConnection()
+{
+    LPCSTR url[3] = {
+        "http://www.baidu.com/",
+        "http://www.taobao.com/",
+        "http://www.qq.com/"
+    };
+    bool ping = false;
+    int i = 0;
+    while(!ping && i<3)
+    {
+        ping = InternetCheckConnectionA(url[i], FLAG_ICC_FORCE_CONNECTION, 0);
+        i++;
+    }
+
+    return ping;
+}
+
+//显示帮助信息
+void showHelp()
+{
+    printf("InternetCheckConnection 用法：\n\n");
+    printf("InternetCheckConnection /?        查看此帮助信息\n");
+    printf("InternetCheckConnection           检测是否可连接到网络，可连接返回1，否则返回0\n");
+    printf("InternetCheckConnection time n    检测是否可连接到网络，可连接返回1，否则每隔\n");
+    printf("                                  time毫秒检测1次，最多检测n次\n\n");
+    //printf("按任意键退出程序...\n");
+    return;
 }
 
